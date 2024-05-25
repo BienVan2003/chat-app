@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, TextInput, TouchableOpacity, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import ChatRoomHeader from '../../components/ChatRoomHeader';
 import CustomKeyboardView from '../../components/CustomKeyboardView';
@@ -19,32 +19,50 @@ export default function ChatRoom() {
     const [messages, setMessages] = useState([]);
     const textRef = useRef('');
     const inputRef = useRef(null);
+    const [data, setData] = useState([]);
+    const scrollViewRef = useRef();
 
     useEffect(() => {
+        const createRoomIfNotExists = async () => {
+            // roomId
+            let roomId = getRoomId(user?.userId, item?.userId);
+            await setDoc(doc(db, 'rooms', roomId), {
+                roomId,
+                createdAt: Timestamp.fromDate(new Date())
+            });
+        }
         createRoomIfNotExists();
 
         let roomId = getRoomId(user?.userId, item?.userId);
         const docRef = doc(db, "rooms", roomId);
         const messagesRef = collection(docRef, "messages");
         const q = query(messagesRef, orderBy('createdAt', 'asc'));
-
         let unsub = onSnapshot(q, (snapshot) => {
-            let allMessages = snapshot.docs.map(doc => doc.data());
-            console.log('allMessages: ', allMessages);
+            let allMessages = snapshot.docs.map(doc => {
+                return doc.data();
+            });
             setMessages([...allMessages]);
-            console.log('messages122: ', messages);
         });
 
-        return unsub;
+        const KeyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow', updateScrollView
+        );
+
+        return () => {
+            unsub();
+            KeyboardDidShowListener.remove();
+        }
+
     }, []);
 
-    const createRoomIfNotExists = async () => {
-        // roomId
-        let roomId = getRoomId(user?.userId, item?.userId);
-        await setDoc(doc(db, 'rooms', roomId), {
-            roomId,
-            createdAt: Timestamp.fromDate(new Date())
-        });
+    useEffect(() => {
+        updateScrollView();
+    }, [messages]);
+
+    const updateScrollView = () => {
+        setTimeout(() => {
+            scrollViewRef?.current?.scrollToEnd({ animated: true });
+        }, 100);
     }
 
     const handleSendMessage = async () => {
@@ -80,7 +98,7 @@ export default function ChatRoom() {
                 <View className="h-3 border-border-neutral-300" />
                 <View className="flex-1 justify-between bg-neutral-100 overflow-visible">
                     <View className="flex-1">
-                        <MessagesList messages={messages} />
+                        <MessagesList scrollViewRef={scrollViewRef} messages={messages} currentUser={user} />
                     </View>
                     <View style={{ marginBottom: hp(1.7) }} className="pt-2" >
                         <View className="flex-row mx-3 justify-between bg-white border p-2 border-neutral-300 rounded-full pl-5">
