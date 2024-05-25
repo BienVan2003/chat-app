@@ -16,6 +16,9 @@
       ]
     ],
     "name": "chat-app",
-    "slug": "chat-app"
+    "slug": "chat-app",
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
