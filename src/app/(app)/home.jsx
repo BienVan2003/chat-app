@@ -29,6 +29,8 @@ export default function Home() {
     setUsers(data);
   }
 
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
     <View className="flex-1 bg-white">
       <StatusBar style="light" />

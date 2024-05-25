@@ -2,10 +2,10 @@ import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Stack } from 'expo-router';
 import React from 'react';
-import { TouchableOpacity, View, Text } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-export default function ChatRoomHeader({user, router}) {
+export default function ChatRoomHeader({ user, router }) {
     return (
         <Stack.Screen
             options={{
@@ -17,11 +17,11 @@ export default function ChatRoomHeader({user, router}) {
                             <Entypo name='chevron-left' size={hp(4)} color='#737373' />
                         </TouchableOpacity>
                         <View className="flex-row items-center gap-3">
-                            <Image 
-                            source={user?.profileUrl} 
-                            style={{ height: hp(4.5), aspectRatio: 1, borderRadius: hp(2.25) }} 
+                            <Image
+                                source={user?.profileUrl}
+                                style={{ height: hp(4.5), aspectRatio: 1, borderRadius: hp(2.25) }}
                             />
-                            <Text style={{fontSize: hp(2.5)}} className="text-neutral-700 font-medium">
+                            <Text style={{ fontSize: hp(2.5) }} className="text-neutral-700 font-medium">
                                 {user?.username}
                             </Text>
                         </View>

@@ -19,6 +19,17 @@
     "slug": "chat-app",
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": "https://n"
+      },
+      "eas": {
+        "projectId": "6edbbc35-4124-47d8-b51b-7bac54f79796"
+      }
+    },
+    "android": {
+      "package": "com.vanbien.chatapp"
     }
   }
 }

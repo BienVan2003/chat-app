@@ -39,7 +39,7 @@ export default function SignIn() {
       <View style={{ paddingTop: hp(8), paddingHorizontal: wp(5) }} className="flex-1 gap-12">
         {/* signIn image */}
         <View className="items-center">
-          <Image style={{ height: hp(25) }} resizeMode='contain' source={require('../assets/images/long.png')} />
+          <Image style={{ height: hp(25) }} resizeMode='contain' source={require('../assets/images/chatapp.png')} />
         </View>
 
         <View className="gap-10">

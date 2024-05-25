@@ -21,11 +21,13 @@ export default function SignUp() {
     if (!emailRef.current || !passwordRef.current || !usernameRef.current) {
       Alert.alert('Đăng Ký', 'Vui lòng điền vào tất cả các trường!');
       return;
+    
     }
-    console.log(emailRef.current)
+
+    
+
     setLoading(true);
     let response = await register(emailRef.current, passwordRef.current, usernameRef.current);
-
     setLoading(false);
 
     console.log('got result: ', response);
@@ -41,7 +43,7 @@ export default function SignUp() {
       <View style={{ paddingTop: hp(8), paddingHorizontal: wp(5) }} className="flex-1 gap-12">
         {/* signIn image */}
         <View className="items-center">
-          <Image style={{ height: hp(25) }} resizeMode='contain' source={require('../assets/images/long.png')} />
+          <Image style={{ height: hp(25) }} resizeMode='contain' source={require('../assets/images/chatapp.png')} />
         </View>
 
         <View className="gap-10">
@@ -94,9 +96,6 @@ export default function SignUp() {
                 )
               }
             </View>
-
-            {/* submit buttn */}
-
 
             <View className="flex-row justify-center">
               <Text style={{ fontSize: hp(1.8) }} className="font-semibold text-neutral-500">Bạn đã có tài khoản?</Text>

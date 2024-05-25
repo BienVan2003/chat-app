@@ -1,5 +1,6 @@
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';
 import {
@@ -16,10 +17,12 @@ import { MenuItem } from './CustomMenuItems';
 
 const ios = Platform.OS == 'ios';
 export default function HomeHeader() {
+    const router = useRouter();
     const { user, logout } = useAuth();
     const { top } = useSafeAreaInsets();
     console.log('user: ', user);
     const handleProfile = async () => {
+        router.push('profile');
     }
     const handleLogout = async () => {
         await logout();
@@ -27,7 +30,7 @@ export default function HomeHeader() {
     return (
         <View style={{ paddingTop: ios ? top : top + 10 }} className="flex-row justify-between px-5 bg-blue-400 pb-6 rounded-b-3xl shadow" >
             <View>
-                <Text style={{ fontSize: hp(3) }} className="font-medium text-white">Chats</Text>
+                <Text style={{ fontSize: hp(3) }} className="font-medium text-white">Đoạn chat</Text>
             </View>
             <View >
                 <Menu>
@@ -38,7 +41,7 @@ export default function HomeHeader() {
 
                     }} >
                         <Image
-                            style={{ height: hp(4.3), aspectRatio: 1, borderRadius: hp(2.15)}}
+                            style={{ height: hp(4.3), aspectRatio: 1, borderRadius: hp(2.15) }}
                             source={user?.profileUrl}
                             placeholder={blurhash}
                             transition={500}

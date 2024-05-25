@@ -1,7 +1,7 @@
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useState } from "react";
-import {auth, db} from '../firebaseConfig';
-import {doc, getDoc, setDoc} from 'firebase/firestore';
+import { auth, db, usersRef } from '../firebaseConfig';
 
 export const AuthContext = createContext();
 
@@ -12,11 +12,11 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (user) => {
-            if(user) {
+            if (user) {
                 setIsAuthenticated(true);
                 setUser(user);
                 updateUserData(user.uid);
-            }else{
+            } else {
                 setIsAuthenticated(false);
                 setUser(null);
             }
@@ -31,7 +31,7 @@ export const AuthContextProvider = ({ children }) => {
         if (docSnap.exists()) {
             console.log("Document data:", docSnap.data());
             let data = docSnap.data();
-            setUser({...user, username: data.username, profileUrl: data.profileUrl, userId: data.userId});
+            setUser({ ...user, username: data.username, profileUrl: data.profileUrl, userId: data.userId });
         } else {
             console.log("No such document!");
         }
@@ -40,46 +40,50 @@ export const AuthContextProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
-            return {success: true};
+            return { success: true };
         } catch (e) {
             let msg = e.message;
-            if(msg.includes('(auth/invalid-email)')) msg = 'Email không hợp lệ';
-            if(msg.includes('(auth/invalid-credential)')) msg = 'Tài khoản hoặc mật khẩu không đúng';
-            return {success: false, msg};
+            if (msg.includes('(auth/invalid-email)')) msg = 'Email không hợp lệ';
+            if (msg.includes('(auth/invalid-credential)')) msg = 'Tài khoản hoặc mật khẩu không đúng';
+            return { success: false, msg };
         }
     }
 
     const logout = async () => {
         try {
             await signOut(auth);
-            return {success: true};
+            return { success: true };
         } catch (e) {
-            return {success: false, msg: e.message};
+            return { success: false, msg: e.message };
         }
     }
 
     const register = async (email, password, username) => {
 
         try {
+            // Kiểm tra xem username đã tồn tại chưa
+            const q = query(usersRef, where("username", "==", username));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                return { success: false, msg: 'Username đã tồn tại' };
+            }
+
+            // Tạo người dùng mới
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('res.user : ', response?.user);
-
-            // setUser(response?.user);
-            // setIsAuthenticated(true);
-
-            let randomInt = Math.floor(Math.random() * 10000 );
+            let randomInt = Math.floor(Math.random() * 10000);
             var profileUrl = `https://api.multiavatar.com/${randomInt}.png`;
             await setDoc(doc(db, "users", response?.user?.uid), {
                 username,
                 profileUrl,
                 userId: response?.user?.uid,
             });
-            return {success: true, data: response?.user};
+            return { success: true, data: response?.user };
         } catch (e) {
             let msg = e.message;
-            if(msg.includes('(auth/invalid-email)')) msg = 'Email không hợp lệ';
-            if(msg.includes('(auth/email-already-in-use)')) msg = 'Email đã tồn tại';
-            return {success: false, msg};
+            if (msg.includes('(auth/invalid-email)')) msg = 'Email không hợp lệ';
+            if (msg.includes('(auth/email-already-in-use)')) msg = 'Email đã tồn tại';
+            return { success: false, msg };
         }
     }
 
